@@ -25,6 +25,7 @@
     <bytecodeTargetLevel>
       <module name="invoice-app (1)" target="17" />
       <module name="POS" target="1.5" />
+      <module name="pos" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
