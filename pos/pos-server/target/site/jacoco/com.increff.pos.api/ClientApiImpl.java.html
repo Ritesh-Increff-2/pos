@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientApiImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api</a> &gt; <span class="el_source">ClientApiImpl.java</span></div><h1>ClientApiImpl.java</h1><pre class="source lang-java linenums">package com.increff.pos.api;
+
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.increff.pos.dao.ClientDao;
+import com.increff.pos.db.ClientPojo;
+import com.increff.pos.exception.ApiException;
+
+
+
+@Service
+<span class="fc" id="L21">public class ClientApiImpl implements ClientApi {</span>
+
+    @Autowired
+    private ClientDao dao;
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ClientPojo add(ClientPojo pojo) throws ApiException {
+        // Check if client with the same name already exists
+<span class="fc" id="L31">        ClientPojo existingClient = dao.findByName(pojo.getName());</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (existingClient != null) {</span>
+<span class="nc" id="L33">            throw new ApiException(&quot;Client with name '&quot; + pojo.getName() + &quot;' already exists&quot;);</span>
+        }
+<span class="fc" id="L35">        return dao.save(pojo);</span>
+    }
+    
+    @Override
+    public Page&lt;ClientPojo&gt; getAll(int page, int size) {
+<span class="nc" id="L40">        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="nc" id="L41">        return dao.findAll(pageRequest);</span>
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ClientPojo update(String oldClientName, String newClientName) throws ApiException {
+<span class="nc" id="L47">        ClientPojo client = dao.findByName(oldClientName);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (Objects.isNull(client)) {</span>
+<span class="nc" id="L49">            throw new ApiException(&quot;Client not found with name: &quot; + oldClientName);</span>
+        }
+<span class="nc" id="L51">        client.setName(newClientName);</span>
+<span class="nc" id="L52">        client.setUpdatedAt(ZonedDateTime.now());</span>
+<span class="nc" id="L53">        return dao.save(client);</span>
+    }
+    
+    @Override
+    public List&lt;ClientPojo&gt; getAllWithoutPagination() throws ApiException {
+<span class="nc" id="L58">        return dao.findAll();</span>
+    }
+
+    @Override
+    public ClientPojo getByClientName(String clientName) throws ApiException {
+<span class="fc" id="L63">        ClientPojo client = dao.findByName(clientName);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (Objects.isNull(client)) {</span>
+<span class="nc" id="L65">            throw new ApiException(&quot;Client not found with name: &quot; + clientName);</span>
+        }
+<span class="fc" id="L67">        return client;</span>
+    }
+  
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

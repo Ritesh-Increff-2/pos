@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthApiImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api</a> &gt; <span class="el_source">AuthApiImpl.java</span></div><h1>AuthApiImpl.java</h1><pre class="source lang-java linenums">package com.increff.pos.api;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.helper.TokenService;
+import com.increff.pos.model.data.UserData;
+
+
+
+@Service
+<span class="fc" id="L17">public class AuthApiImpl implements AuthApi {</span>
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Value(&quot;${supervisor.emails}&quot;)  
+    private String supervisorEmails;
+
+    @Override
+    public UserData login(String email){
+<span class="nc" id="L27">        UserData userData = new UserData();</span>
+<span class="nc" id="L28">        userData.setEmail(email);</span>
+        
+<span class="nc" id="L30">        List&lt;String&gt; supervisorList = Arrays.asList(supervisorEmails.split(&quot;,&quot;));</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        userData.setRole(supervisorList.contains(email) ? &quot;supervisor&quot; : &quot;operator&quot;);</span>
+<span class="nc" id="L32">        String role = userData.getRole();</span>
+<span class="nc" id="L33">        return tokenService.generateToken(email,role);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TokenService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.helper</a> &gt; <span class="el_source">TokenService.java</span></div><h1>TokenService.java</h1><pre class="source lang-java linenums">package com.increff.pos.helper;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+
+import com.increff.pos.model.data.UserData;
+
+
+@Service
+<span class="fc" id="L16">public class TokenService {</span>
+<span class="fc" id="L17">    private final HashSet&lt;UserData&gt; tokenSet = new HashSet&lt;&gt;();</span>
+
+<span class="fc" id="L19">    private static final Set&lt;String&gt; SUPERVISOR_ONLY_PATHS = new HashSet&lt;&gt;(Arrays.asList(</span>
+        &quot;/api/product/add&quot;,
+        &quot;/api/product/add-csv&quot;,
+        &quot;/api/inventory&quot;,
+        &quot;/api/inventory/add-csv&quot;,
+        &quot;/api/client&quot;
+
+        ));
+
+    public UserData generateToken(String email, String role) {
+<span class="nc" id="L29">        String token = UUID.randomUUID().toString();</span>
+<span class="nc" id="L30">        UserData userData = new UserData();</span>
+<span class="nc" id="L31">        userData.setEmail(email);</span>
+<span class="nc" id="L32">        userData.setRole(role);</span>
+<span class="nc" id="L33">        userData.setToken(token);</span>
+<span class="nc" id="L34">        tokenSet.add(userData);</span>
+<span class="nc" id="L35">        return userData;</span>
+    }
+
+    public UserData validateToken(String token , String path,String method) {
+<span class="nc bnc" id="L39" title="All 4 branches missed.">      if(path.isEmpty() &amp;&amp; method.equals(&quot;GET&quot;)) {</span>
+<span class="nc" id="L40">        System.out.println(&quot;Warning : Using Default validateToken method&quot;);</span>
+      }
+      else{
+<span class="nc" id="L43">        System.out.println(&quot;Validating path&quot;);</span>
+      }
+
+<span class="nc" id="L46">      UserData userData = null;</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">      for(UserData user : tokenSet){</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if(user.getToken().equals(token)){</span>
+<span class="nc" id="L49">          userData = user;</span>
+<span class="nc" id="L50">          break;</span>
+        }
+<span class="nc" id="L52">      }</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">      if(userData == null){</span>
+<span class="nc" id="L54">        return null;</span>
+      }
+
+<span class="nc bnc" id="L57" title="All 4 branches missed.">      if(SUPERVISOR_ONLY_PATHS.contains(path) &amp;&amp; !userData.getRole().equals(&quot;supervisor&quot;)){</span>
+<span class="nc" id="L58">        System.out.println(&quot;Warning : User is not a supervisor&quot;);</span>
+<span class="nc" id="L59">        return null;</span>
+      }
+<span class="nc" id="L61">      return userData;</span>
+
+
+    }
+    public UserData validateToken(String token){
+<span class="nc" id="L66">        return validateToken(token,&quot;&quot;,&quot;&quot;);  </span>
+    }
+    public void removeToken(String token){
+<span class="nc" id="L69">        tokenSet.removeIf(user -&gt; user.getToken().equals(token));</span>
+<span class="nc" id="L70">    }</span>
+
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

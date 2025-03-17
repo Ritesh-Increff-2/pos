@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">ClientDao.java</span></div><h1>ClientDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
+import org.springframework.stereotype.Repository;
+
+import com.increff.pos.db.ClientPojo;
+
+@Repository
+public class ClientDao extends AbstractDao&lt;ClientPojo&gt; {
+    public ClientDao(MongoOperations mongoOperations) {
+<span class="fc" id="L19">        super(</span>
+            new MongoRepositoryFactory(mongoOperations)
+<span class="fc" id="L21">                .getEntityInformation(ClientPojo.class),</span>
+            mongoOperations
+        );
+<span class="fc" id="L24">    }</span>
+
+    public ClientPojo findByName(String name) {
+<span class="fc" id="L27">        Query query = Query.query(Criteria.where(&quot;name&quot;).is(name));</span>
+<span class="fc" id="L28">        return mongoOperations.findOne(query, ClientPojo.class);</span>
+    }
+    
+    public Page&lt;ClientPojo&gt; findByNameRegex(String pattern, PageRequest pageRequest) {
+<span class="nc" id="L32">        Query query = Query.query(Criteria.where(&quot;name&quot;).regex(pattern, &quot;i&quot;)); </span>
+<span class="nc" id="L33">        long totalElements = mongoOperations.count(query, ClientPojo.class);</span>
+<span class="nc" id="L34">        query.with(pageRequest);</span>
+<span class="nc" id="L35">        List&lt;ClientPojo&gt; clients = mongoOperations.find(query, ClientPojo.class);</span>
+<span class="nc" id="L36">        return new PageImpl&lt;&gt;(clients, pageRequest, totalElements);</span>
+    }
+
+   
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

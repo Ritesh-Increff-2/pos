@@ -1,0 +1,10 @@
+com/increff/pos/dto/OrderDtoTest.class
+com/increff/pos/dto/SalesReportDtoTest.class
+com/increff/pos/dto/InvoiceDtoTest.class
+com/increff/pos/dto/ProductDtoTest.class
+com/increff/pos/dto/InventoryDtoTest.class
+com/increff/pos/test/AbstractUnitTest.class
+com/increff/pos/dto/ClientDtoTest.class
+com/increff/pos/config/TestConfig.class
+com/increff/pos/dto/DailyStatsDtoTest.class
+com/increff/pos/dto/AuthDtoTest.class

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryApiImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api</a> &gt; <span class="el_source">InventoryApiImpl.java</span></div><h1>InventoryApiImpl.java</h1><pre class="source lang-java linenums">package com.increff.pos.api;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.increff.pos.dao.InventoryDao;
+import com.increff.pos.db.InventoryPojo;
+import com.increff.pos.exception.ApiException;
+@Service
+<span class="fc" id="L11">public class InventoryApiImpl implements InventoryApi {</span>
+    @Autowired
+    private InventoryDao inventoryDao;
+    
+    
+   @Override
+    public InventoryPojo add(InventoryPojo pojo) throws ApiException {
+<span class="fc" id="L18">        InventoryPojo existingInventory = inventoryDao.findByProductId(pojo.getProductId());</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (existingInventory != null) {</span>
+<span class="nc" id="L20">            throw new ApiException(&quot;Inventory already exists for product ID: &quot; + pojo.getProductId());</span>
+        }
+<span class="fc" id="L22">        return inventoryDao.save(pojo);</span>
+    }
+
+    @Override
+    public InventoryPojo getByProductId(String productId) throws ApiException {
+<span class="fc" id="L27">        InventoryPojo inventory = inventoryDao.findByProductId(productId);</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if(inventory == null){</span>
+<span class="nc" id="L29">            throw new ApiException(&quot;Inventory not found for product ID: &quot; + productId);</span>
+        }
+<span class="fc" id="L31">        return inventory;</span>
+    }
+
+    @Override
+    public InventoryPojo getcheckByProductId(String productId) throws ApiException {
+<span class="fc" id="L36">        InventoryPojo inventory = inventoryDao.findByProductId(productId);</span>
+<span class="fc" id="L37">        return inventory;</span>
+    }
+
+   @Override
+   @Transactional(rollbackFor = Exception.class)
+   public void update(String productId, InventoryPojo pojo) throws ApiException {
+<span class="fc" id="L43">        InventoryPojo existing = inventoryDao.findByProductId(productId);</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (existing == null) {</span>
+<span class="nc" id="L45">            throw new ApiException(&quot;No inventory found for product ID: &quot; + productId);</span>
+        }
+<span class="fc" id="L47">        existing.setQuantity(pojo.getQuantity());</span>
+<span class="fc" id="L48">        inventoryDao.save(existing);</span>
+<span class="fc" id="L49">    }</span>
+
+    @Override
+    public InventoryPojo relativeUpdate(InventoryPojo inventoryPojo, Integer quantity) throws ApiException {
+<span class="fc" id="L53">        Integer netQuantity = inventoryPojo.getQuantity() + quantity;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if(netQuantity &lt; 0){</span>
+<span class="nc" id="L55">            throw new ApiException(&quot;Inventory quantity cannot be negative&quot;);</span>
+        }
+<span class="fc" id="L57">        inventoryPojo.setQuantity(netQuantity);</span>
+<span class="fc" id="L58">        inventoryDao.save(inventoryPojo);</span>
+<span class="fc" id="L59">        return inventoryPojo;</span>
+    }
+   
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

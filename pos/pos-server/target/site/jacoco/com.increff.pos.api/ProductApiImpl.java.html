@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductApiImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api</a> &gt; <span class="el_source">ProductApiImpl.java</span></div><h1>ProductApiImpl.java</h1><pre class="source lang-java linenums">package com.increff.pos.api;
+
+import java.io.InputStream;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.increff.pos.dao.ProductDao;
+import com.increff.pos.db.ProductPojo;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.helper.ProductHelper;
+import com.increff.pos.model.data.ErrorData;
+import com.increff.pos.model.form.PageForm;
+import com.increff.pos.model.form.ProductForm;
+import com.increff.pos.util.NormalizeData;
+import com.increff.pos.util.ValidationUtil;
+@Service
+<span class="fc" id="L29">public class ProductApiImpl implements ProductApi {</span>
+
+    @Autowired
+    private ProductDao productDao;
+    @Autowired
+    private ProductHelper productHelper;
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ProductPojo add(ProductPojo productPojo) throws ApiException {
+<span class="fc" id="L39">        checkIfBarcodeExists(productPojo.getBarcode());</span>
+<span class="fc" id="L40">        return productDao.save(productPojo);</span>
+    }
+
+    @Override
+    public Page&lt;ProductPojo&gt; getAll(int page, int size) {
+<span class="fc" id="L45">        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="fc" id="L46">        return productDao.findAll(pageRequest);</span>
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ProductPojo update(String barcode,ProductForm form) throws ApiException {
+        // Find the existing product by barcode
+<span class="fc" id="L53">        ProductPojo existingProduct = productDao.findByBarcode(barcode);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (existingProduct == null) {</span>
+<span class="nc" id="L55">            throw new ApiException(&quot;No product exists with barcode: &quot; + barcode);</span>
+        }
+<span class="fc" id="L57">        existingProduct = NormalizeData.normalizeProductPojo(existingProduct);</span>
+
+        // Update only allowed fields
+<span class="fc" id="L60">        existingProduct.setProductName(form.getProductName());</span>
+<span class="fc" id="L61">        existingProduct.setMrp(form.getMrp());</span>
+<span class="fc" id="L62">        existingProduct.setImageUrl(form.getImageUrl());</span>
+<span class="fc" id="L63">        existingProduct.setUpdatedAt(ZonedDateTime.now());</span>
+
+        // Save the updated product
+<span class="fc" id="L66">        return productDao.save(existingProduct);</span>
+    }
+
+    @Override
+    public ProductPojo getByBarcode(String barcode) throws ApiException {
+<span class="fc" id="L71">        ProductPojo product = productDao.findByBarcode(barcode);</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (product == null) {</span>
+<span class="nc" id="L73">            throw new ApiException(&quot;No product exists with barcode: &quot; + barcode);</span>
+        }
+<span class="fc" id="L75">        return product;</span>
+    }
+
+
+
+    @Override
+    public ProductPojo getByProductID(String productID) throws ApiException {
+<span class="fc" id="L82">        return productDao.findByProductID(productID);</span>
+    }
+
+    private void checkIfBarcodeExists(String barcode) throws ApiException {
+<span class="fc" id="L86">        ProductPojo existingProductPojo = productDao.findByBarcode(barcode);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if(Objects.nonNull(existingProductPojo)) {</span>
+<span class="fc" id="L88">            throw new ApiException(&quot;Product already exists with barcode: &quot; + barcode);</span>
+        }
+<span class="fc" id="L90">    }</span>
+
+    @Override
+    public Page&lt;ProductPojo&gt; searchProductsByProductName(String searchPattern, PageForm form) throws ApiException {
+<span class="fc" id="L94">        PageRequest pageRequest = PageRequest.of(form.getPage(), form.getSize(), Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="fc" id="L95">        Page&lt;ProductPojo&gt; products = productDao.searchProductsByProductName(searchPattern, pageRequest);</span>
+<span class="fc" id="L96">        return products;</span>
+    }
+
+    @Override
+    public Page&lt;ProductPojo&gt; searchProductsByClientName(String searchPattern, PageForm form) throws ApiException {
+<span class="fc" id="L101">        PageRequest pageRequest = PageRequest.of(form.getPage(), form.getSize(), Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="fc" id="L102">        Page&lt;ProductPojo&gt; products = productDao.searchProductsByClientName(searchPattern, pageRequest);</span>
+<span class="fc" id="L103">        return products;</span>
+    }
+
+    @Override
+    public ResponseEntity&lt;?&gt; addProductsFromTsv(MultipartFile file) throws ApiException {
+<span class="fc" id="L108">        try (InputStream inputStream = file.getInputStream()) {</span>
+<span class="fc" id="L109">            List&lt;ProductForm&gt; productForms = productHelper.parseTsvFile(inputStream);</span>
+<span class="fc" id="L110">            List&lt;ErrorData&gt; errorDataList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L112">            ValidationUtil.validateProductFormList(productForms);</span>
+<span class="fc" id="L113">            productForms = NormalizeData.normalizeProductFormList(productForms);</span>
+
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (ProductForm form : productForms) {</span>
+                try {
+<span class="fc" id="L118">                    add(ProductHelper.convertToEntity(form));</span>
+<span class="nc" id="L119">                } catch (ApiException e) {</span>
+<span class="nc" id="L120">                    errorDataList.add(new ErrorData(form.getBarcode(), e.getMessage()));</span>
+<span class="fc" id="L121">                }   </span>
+<span class="fc" id="L122">            }</span>
+
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">            if (!errorDataList.isEmpty()) {</span>
+<span class="nc" id="L125">                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productHelper.generateErrorTsv(errorDataList));</span>
+            }
+
+<span class="fc" id="L128">            return ResponseEntity.ok(&quot;Products added successfully&quot;);</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">        } catch (Exception e) {</span>
+<span class="fc" id="L130">            throw new ApiException(&quot;Error processing file: &quot; + e.getMessage());</span>
+        }
+    }
+
+    @Override
+    public List&lt;String&gt; getAllBarcodes() throws ApiException {
+<span class="fc" id="L136">        return productDao.getAllBarcodes();</span>
+    }
+    
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

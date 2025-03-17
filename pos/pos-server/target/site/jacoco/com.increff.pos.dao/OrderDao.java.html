@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dao</a> &gt; <span class="el_source">OrderDao.java</span></div><h1>OrderDao.java</h1><pre class="source lang-java linenums">package com.increff.pos.dao;
+
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
+import org.springframework.stereotype.Repository;
+
+import com.increff.pos.db.OrderPojo;
+import com.increff.pos.model.enums.OrderStatus;
+
+@Repository
+public class OrderDao extends AbstractDao&lt;OrderPojo&gt; {
+    
+    public OrderDao(MongoOperations mongoOperations) {
+<span class="fc" id="L22">        super(</span>
+            new MongoRepositoryFactory(mongoOperations)
+<span class="fc" id="L24">                .getEntityInformation(OrderPojo.class),</span>
+            mongoOperations
+        );
+<span class="fc" id="L27">    }</span>
+
+    public OrderPojo findByOrderId(String orderId) {
+<span class="fc" id="L30">        Query query = Query.query(Criteria.where(&quot;orderId&quot;).is(orderId));</span>
+<span class="fc" id="L31">        return mongoOperations.findOne(query, OrderPojo.class);</span>
+    }
+    
+
+    public Void updateOrderStatusByOrderId(String orderId,String status) {
+<span class="fc" id="L36">        OrderPojo orderPojo = findByOrderId(orderId);</span>
+<span class="fc" id="L37">        orderPojo.setStatus(OrderStatus.valueOf(status));</span>
+<span class="fc" id="L38">        mongoOperations.save(orderPojo);</span>
+<span class="fc" id="L39">        return null;</span>
+    }
+
+    public Page&lt;OrderPojo&gt; OrderSearchByOrderId(String searchPattern, PageRequest pageRequest) {
+<span class="fc" id="L43">        Query query = Query.query(Criteria.where(&quot;orderId&quot;).regex(searchPattern, &quot;i&quot;));</span>
+<span class="fc" id="L44">        long totalElements = mongoOperations.count(query, OrderPojo.class);</span>
+<span class="fc" id="L45">        query.with(pageRequest);</span>
+<span class="fc" id="L46">        List&lt;OrderPojo&gt; orders = mongoOperations.find(query, OrderPojo.class);</span>
+<span class="fc" id="L47">        return new PageImpl&lt;&gt;(orders, pageRequest, totalElements);</span>
+    }
+
+    public Page&lt;OrderPojo&gt; OrderSearchByOrderStatus(String searchPattern, PageRequest pageRequest) {
+<span class="fc" id="L51">        Query query = Query.query(Criteria.where(&quot;status&quot;).regex(searchPattern, &quot;i&quot;));</span>
+<span class="fc" id="L52">        long totalElements = mongoOperations.count(query, OrderPojo.class);</span>
+<span class="fc" id="L53">        query.with(pageRequest);</span>
+<span class="fc" id="L54">        List&lt;OrderPojo&gt; orders = mongoOperations.find(query, OrderPojo.class);</span>
+<span class="fc" id="L55">        return new PageImpl&lt;&gt;(orders, pageRequest, totalElements);</span>
+    }
+
+    public Page&lt;OrderPojo&gt; filterOrderByDate(ZonedDateTime startDate, ZonedDateTime endDate,PageRequest pageRequest ) {
+<span class="fc" id="L59">        Query query = Query.query(Criteria.where(&quot;orderTime&quot;).gte(startDate).lte(endDate));</span>
+<span class="fc" id="L60">        long totalElements = mongoOperations.count(query, OrderPojo.class);</span>
+<span class="fc" id="L61">        query.with(pageRequest);</span>
+<span class="fc" id="L62">        List&lt;OrderPojo&gt; orders = mongoOperations.find(query, OrderPojo.class);</span>
+<span class="fc" id="L63">        return new PageImpl&lt;&gt;(orders, pageRequest, totalElements);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

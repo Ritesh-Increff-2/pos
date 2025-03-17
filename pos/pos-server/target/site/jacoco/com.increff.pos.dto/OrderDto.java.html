@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.dto</a> &gt; <span class="el_source">OrderDto.java</span></div><h1>OrderDto.java</h1><pre class="source lang-java linenums">package com.increff.pos.dto;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import com.increff.pos.api.OrderApi;
+import com.increff.pos.api.flow.OrderFlow;
+import com.increff.pos.db.OrderPojo;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.helper.OrderHelper;
+import com.increff.pos.model.data.OrderData;
+import com.increff.pos.model.form.DataPageForm;
+import com.increff.pos.model.form.OrderForm;
+import com.increff.pos.model.form.PageForm;
+import com.increff.pos.util.NormalizeData;
+import com.increff.pos.util.ValidationUtil;
+
+@Service
+<span class="fc" id="L23">public class OrderDto {</span>
+    @Autowired
+    private OrderApi orderApi;  
+
+    @Autowired
+    private OrderFlow orderFlow;
+    
+    public OrderData addOrder(OrderForm form) throws ApiException {
+<span class="fc" id="L31">        NormalizeData.normalizeOrderForm(form);</span>
+<span class="fc" id="L32">        ValidationUtil.validateOrderForm(form);</span>
+<span class="fc" id="L33">        OrderPojo orderPojo = OrderHelper.convertToEntity(form);</span>
+<span class="fc" id="L34">        OrderPojo addedOrderPojo = orderFlow.add(orderPojo,form.getOrderItems());</span>
+
+<span class="fc" id="L36">        return OrderHelper.convertToData(addedOrderPojo);</span>
+    }
+
+    public OrderData getOrderByOrderId(String orderId) throws ApiException {
+<span class="fc" id="L40">        OrderPojo pojo = orderApi.getByOrderId(orderId);</span>
+<span class="fc" id="L41">        return OrderHelper.convertToData(pojo);</span>
+    }
+
+    public OrderData cancelOrder(String orderId) throws ApiException {
+<span class="fc" id="L45">        OrderPojo pojo = orderApi.cancel(orderId);</span>
+<span class="fc" id="L46">        return OrderHelper.convertToData(pojo);</span>
+    }
+
+    public OrderData retryOrder(String orderId) throws ApiException {
+<span class="nc" id="L50">        OrderPojo pojo = orderFlow.retryOrder(orderId);</span>
+<span class="nc" id="L51">        return OrderHelper.convertToData(pojo);</span>
+    }
+
+    public Page&lt;OrderData&gt; getAllOrdersWithPagination(PageForm form) throws ApiException {
+<span class="fc" id="L55">        ValidationUtil.validatePageForm(form);</span>
+<span class="fc" id="L56">        Page&lt;OrderPojo&gt; pojos = orderApi.getAllWithPagination(form);</span>
+<span class="fc" id="L57">        return pojos.map(OrderHelper::convertToData);</span>
+    }
+
+    public Page&lt;OrderData&gt; OrderSearchByOrderId(PageForm form,String searchorderId) throws ApiException {
+<span class="fc" id="L61">        ValidationUtil.validatePageForm(form);</span>
+<span class="fc" id="L62">        Page&lt;OrderPojo&gt; pojos = orderApi.OrderSearchByOrderId(form,searchorderId);</span>
+<span class="fc" id="L63">        return pojos.map(OrderHelper::convertToData);</span>
+    }
+
+    public Page&lt;OrderData&gt; OrderSearchByOrderStatus(PageForm form,String searchstatus) throws ApiException {
+<span class="fc" id="L67">        ValidationUtil.validatePageForm(form);</span>
+<span class="fc" id="L68">        Page&lt;OrderPojo&gt; pojos = orderApi.OrderSearchByOrderStatus(form,searchstatus);</span>
+<span class="fc" id="L69">        return pojos.map(OrderHelper::convertToData);</span>
+    }
+    
+    public Page&lt;OrderData&gt; filterOrderByDate(DataPageForm form) throws ApiException {
+<span class="fc" id="L73">        ValidationUtil.validateDataPageForm(form);</span>
+<span class="fc" id="L74">        PageForm pageForm = new PageForm();</span>
+<span class="fc" id="L75">        pageForm.setPage(form.getPage());</span>
+<span class="fc" id="L76">        pageForm.setSize(form.getSize());</span>
+<span class="fc" id="L77">        Page&lt;OrderPojo&gt; pojos = orderApi.filterOrderByDate(form,pageForm);</span>
+<span class="fc" id="L78">        return pojos.map(OrderHelper::convertToData);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

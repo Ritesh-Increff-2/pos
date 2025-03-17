@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryFlow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api.flow</a> &gt; <span class="el_source">InventoryFlow.java</span></div><h1>InventoryFlow.java</h1><pre class="source lang-java linenums">package com.increff.pos.api.flow;
+
+import java.io.InputStream;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.increff.pos.api.InventoryApi;
+import com.increff.pos.api.ProductApi;
+import com.increff.pos.db.InventoryPojo;
+import com.increff.pos.db.ProductPojo;
+import com.increff.pos.exception.ApiException;
+import com.increff.pos.helper.InventoryHelper;
+import com.increff.pos.model.data.ErrorData;
+import com.increff.pos.model.data.InventoryData;
+import com.increff.pos.model.form.InventoryForm;
+import com.increff.pos.util.ValidationUtil;
+@Service
+<span class="fc" id="L25">public class InventoryFlow {</span>
+    @Autowired
+    private InventoryApi inventoryApi;
+
+    @Autowired
+    private ProductApi productApi;
+
+    @Autowired
+    private InventoryHelper inventoryHelper;
+    
+    public InventoryData addFlow(InventoryForm form) throws ApiException {
+<span class="fc" id="L36">        ProductPojo product = productApi.getByBarcode(form.getBarcode());</span>
+
+<span class="fc" id="L38">        InventoryPojo pojo = InventoryHelper.convertToEntity(form, product.getId());</span>
+<span class="fc" id="L39">        InventoryPojo savedPojo = inventoryApi.add(pojo);</span>
+<span class="fc" id="L40">        return InventoryHelper.convertToData(savedPojo, product);</span>
+    }
+
+    public InventoryData getByBarcodeFlow(String barcode) throws ApiException {
+<span class="fc" id="L44">        ProductPojo product = productApi.getByBarcode(barcode);</span>
+<span class="fc" id="L45">        InventoryPojo pojo = inventoryApi.getByProductId(product.getId());</span>
+<span class="fc" id="L46">        return InventoryHelper.convertToData(pojo, product);</span>
+    }
+
+    public void updateFlow(String barcode, InventoryForm form) throws ApiException {
+<span class="fc" id="L50">        ProductPojo product = productApi.getByBarcode(barcode);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (product == null) {</span>
+<span class="nc" id="L52">            throw new ApiException(&quot;No product exists with barcode: &quot; + barcode);</span>
+        }
+<span class="fc" id="L54">        InventoryPojo pojo = new InventoryPojo();</span>
+<span class="fc" id="L55">        pojo.setProductId(product.getId());</span>
+<span class="fc" id="L56">        pojo.setQuantity(form.getQuantity());</span>
+<span class="fc" id="L57">        pojo.setUpdatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L58">        inventoryApi.update(product.getId(), pojo);</span>
+<span class="fc" id="L59">    }</span>
+
+    public void relativeUpdateflow(String barcode, InventoryForm form) throws ApiException {
+<span class="fc" id="L62">        ProductPojo product = productApi.getByBarcode(barcode);</span>
+<span class="fc" id="L63">        InventoryPojo pojo = inventoryApi.getByProductId(product.getId());</span>
+<span class="fc" id="L64">        pojo.setProductId(product.getId());</span>
+<span class="fc" id="L65">        pojo.setQuantity(inventoryApi.getByProductId(product.getId()).getQuantity());</span>
+<span class="fc" id="L66">        pojo.setUpdatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L67">        inventoryApi.relativeUpdate(pojo, form.getQuantity());</span>
+<span class="fc" id="L68">    }</span>
+
+    public void getid(String barcode) throws ApiException {
+<span class="nc" id="L71">        ProductPojo product = productApi.getByBarcode(barcode);</span>
+<span class="nc" id="L72">        inventoryApi.getByProductId(product.getId());</span>
+    
+<span class="nc" id="L74">    }</span>
+
+    public Boolean checkIfInventoryExists(String barcode) throws ApiException {
+<span class="fc" id="L77">        ProductPojo product = productApi.getByBarcode(barcode);</span>
+<span class="fc" id="L78">        InventoryPojo pojo = inventoryApi.getcheckByProductId(product.getId());</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if(pojo == null){</span>
+<span class="fc" id="L80">            return false;</span>
+        }
+<span class="nc" id="L82">        return true;</span>
+    }
+    public ResponseEntity&lt;?&gt; addInventoryFromTsvFlow(MultipartFile file) throws ApiException {
+<span class="fc" id="L85">        try(InputStream inputStream = file.getInputStream()){</span>
+            
+<span class="fc" id="L87">            List&lt;InventoryForm&gt; inventoryForms = inventoryHelper.parseTsvFile(inputStream);</span>
+<span class="fc" id="L88">            List&lt;ErrorData&gt; errorDataList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L89">            ValidationUtil.validateInventoryFormList(inventoryForms);</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            for(InventoryForm form : inventoryForms){</span>
+<span class="fc" id="L92">                Boolean isInventoryAlreadyPresent = checkIfInventoryExists(form.getBarcode());</span>
+               
+                try{
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">                    if(!isInventoryAlreadyPresent){</span>
+<span class="fc" id="L96">                        addFlow(form);</span>
+                    } else {
+<span class="nc" id="L98">                        updateFlow(form.getBarcode(), form);</span>
+                    }
+<span class="nc" id="L100">                } catch(ApiException e){</span>
+<span class="nc" id="L101">                    errorDataList.add(new ErrorData(form.getBarcode(), e.getMessage()));</span>
+<span class="fc" id="L102">                }</span>
+<span class="fc" id="L103">            }</span>
+
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if(!errorDataList.isEmpty()){</span>
+<span class="nc" id="L106">                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(inventoryHelper.generateErrorTsv(errorDataList));</span>
+            }
+
+<span class="fc" id="L109">            return ResponseEntity.ok(&quot;Inventory added successfully&quot;);</span>
+            
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        } catch(Exception e){</span>
+<span class="nc" id="L112">            throw new ApiException(&quot;Error processing file: &quot; + e.getMessage());</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

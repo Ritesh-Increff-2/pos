@@ -1,0 +1,691 @@
+/* frontend/src/app/products/products.css */
+.products-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.product-card {
+    border: none;
+    border-radius: 16px;
+    margin: 0px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    padding-top: 8px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-container {
+    position: relative;
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    min-height: 150px;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 12px 12px 0 0;
+}
+
+.card-body {
+    padding: 1rem 1.25rem;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #000000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.product-info {
+    font-size: 0.9rem;
+    color: #000000;
+}
+
+.product-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    align-items: center;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-item i {
+    color: #000000;
+    width: 16px;
+    font-size: 1.0rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-warning {
+    color: #fd7e14;
+    border-color: #fd7e14;
+    background-color: rgba(253, 126, 20, 0.1);
+}
+
+.btn-outline-warning:hover {
+    color: #fff;
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    transform: translateY(-2px);
+}
+
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+    background-color: rgba(13, 202, 240, 0.1);
+}
+
+.btn-outline-info:hover {
+    color: #fff;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    transform: translateY(-2px);
+}
+
+.stock-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.in-stock {
+    background-color: rgba(0, 149, 79, 0.15);
+    color: #158f56;
+    border: 1px solid rgba(0, 81, 43, 0.2);
+}
+
+.out-of-stock {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.stock-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-container button:hover {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.form-select {
+    border-radius: 8px;
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    min-width: 200px;
+    height: 40px;
+}
+
+.form-select option {
+    padding: 8px;
+}
+
+.form-select option:hover {
+    background-color: #f8f9fa;
+}
+
+.barcode-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+.barcode-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.barcode-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.barcode-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-list {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dee2e6;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    max-height: 320px; /* Height for approximately 10 items */
+    overflow-y: auto;
+}
+
+.dropdown-items {
+    padding: 0;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    height: 32px; /* Fixed height for each item */
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* Custom scrollbar styles for better appearance */
+.dropdown-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* For Firefox */
+.dropdown-list {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.client-dropdown {
+    margin-top: 4px;
+}
+
+/* Add these styles to your existing CSS */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary i {
+    font-size: 1.1rem;
+}
+
+.d-flex.gap-3 .btn {
+    min-width: 160px;
+    padding: 8px 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+    /* Adjust top buttons container */
+    .d-flex.gap-3.mb-3.justify-content-center {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 15px;
+    }
+
+    .d-flex.gap-3.mb-3.justify-content-center .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Adjust search section */
+    .d-flex.mb-3 {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-select {
+        max-width: 100%;
+    }
+
+    .position-relative.flex-grow-1.d-flex.gap-2.ms-2 {
+        margin-left: 0 !important;
+        flex-direction: column;
+    }
+
+    .position-relative.flex-grow-1.d-flex.gap-2.ms-2 .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Improve search section layout */
+    .search-section {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .search-section .form-select,
+    .search-section .position-relative {
+        width: 100%;
+    }
+
+    /* Adjust button spacing */
+    .d-flex.gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    /* Adjust product cards */
+    .product-card {
+        margin: 10px 0;
+    }
+
+    /* Adjust modals */
+    .modal-dialog {
+        margin: 10px;
+    }
+
+    /* Adjust product info layout */
+    .product-info-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .info-item {
+        justify-content: flex-start;
+    }
+
+    /* Adjust pagination */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .page-item {
+        margin: 2px;
+    }
+
+    .d-flex.gap-3.mb-3.justify-content-center {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-3.mb-3.justify-content-center .btn {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .form-select {
+        min-width: 100%;
+    }
+
+    .position-relative.flex-grow-1.d-flex.gap-2.ms-2 {
+        flex-direction: column;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    /* Improve modal responsiveness */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    /* Adjust form inputs for better mobile experience */
+    .form-control, 
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+
+    /* Make dropdowns more touch-friendly */
+    .dropdown-item {
+        padding: 1rem;
+        height: auto;
+        min-height: 44px; /* Better touch target size */
+    }
+
+    /* Add fluid typography */
+    .product-title {
+        font-size: calc(1rem + 0.5vw);
+    }
+
+    .product-info {
+        font-size: calc(0.8rem + 0.3vw);
+    }
+}
+
+@media (max-width: 576px) {
+    /* Further adjustments for very small screens */
+    .container {
+        padding: 10px;
+    }
+
+    .product-image {
+        height: 150px;
+    }
+
+    .product-title {
+        font-size: 1rem;
+    }
+
+    .product-info {
+        font-size: 0.8rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+    }
+
+    /* Adjust modal content */
+    .modal-body {
+        padding: 15px;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    /* Adjust stock badge */
+    .stock-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    /* Adjust modal responsiveness */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    /* Adjust form inputs for better mobile experience */
+    .form-control, 
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+
+    /* Make dropdowns more touch-friendly */
+    .dropdown-item {
+        padding: 1rem;
+        height: auto;
+        min-height: 44px; /* Better touch target size */
+    }
+}
+
+/* Add smooth transitions for responsive changes */
+.product-card,
+.btn,
+.form-control,
+.modal-dialog {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Improve dropdown responsiveness */
+.dropdown-list {
+    max-height: 40vh;
+    width: 100%;
+}
+
+/* Improve form inputs on mobile */
+@media (max-width: 576px) {
+    input[type="text"],
+    input[type="number"],
+    select.form-select {
+        font-size: 16px; /* Prevents zoom on mobile devices */
+        padding: 10px;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+}
+
+/* Add touch-friendly hover states for mobile */
+@media (hover: none) {
+    .product-card:hover {
+        transform: none;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+
+    .action-buttons .btn:active {
+        transform: scale(0.98);
+    }
+
+    .edit-badge,
+    .inventory-edit,
+    .dropdown-item {
+        cursor: default; /* Remove hover cursor on touch devices */
+    }
+
+    .edit-badge:active,
+    .inventory-edit:active,
+    .dropdown-item:active {
+        opacity: 0.7;
+    }
+}
+
+/* Add styles for the search section buttons and input */
+.search-section .btn {
+    height: 40px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-section .form-control {
+    height: 40px;
+    padding: 8px 16px;
+}
+
+.card-actions {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.action-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.action-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.action-icon.edit {
+    background: #ffd43b;
+    color: #fff;
+}
+
+.inventory-section {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.inventory-section .edit-icon {
+    color: #0dcaf0;
+    margin-left: auto;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.inventory-section .edit-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Update the edit badge styles */
+.edit-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85); /* Lighter, more subtle background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(5, 3, 3, 0.1);
+}
+
+.edit-badge i {
+    color: #000000; /* More subtle gray color */
+    font-size: 18px;
+}
+
+.edit-badge:hover {
+    background: rgba(233, 236, 239, 0.95); /* Slightly darker on hover */
+}
+
+/* Style for inventory edit icon */
+.inventory-edit {
+    margin-left: 8px;
+    color: #6c757d; /* Match the edit badge color */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.inventory-edit:hover {
+    color: #495057; /* Slightly darker on hover */
+}
+
+/* Add smooth transitions for layout changes */
+.container,
+.row,
+.col-md-4,
+.product-card {
+    transition: all 0.3s ease-in-out;
+}

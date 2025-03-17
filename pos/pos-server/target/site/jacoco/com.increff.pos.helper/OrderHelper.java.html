@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.helper</a> &gt; <span class="el_source">OrderHelper.java</span></div><h1>OrderHelper.java</h1><pre class="source lang-java linenums">package com.increff.pos.helper;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.increff.pos.db.OrderItemPojo;
+import com.increff.pos.db.OrderPojo;
+import com.increff.pos.model.data.OrderData;
+import com.increff.pos.model.data.OrderItemData;
+import com.increff.pos.model.form.OrderForm;
+import com.increff.pos.model.form.OrderItemForm;
+
+
+<span class="nc" id="L16">public class OrderHelper {</span>
+    public static OrderPojo convertToEntity(OrderForm form) {
+<span class="fc" id="L18">        OrderPojo pojo = new OrderPojo();</span>
+<span class="fc" id="L19">        pojo.setCreatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L20">        List&lt;OrderItemPojo&gt; orderItems = form.getOrderItems().stream()</span>
+<span class="fc" id="L21">        .map(OrderHelper::convertToItemEntity)</span>
+<span class="fc" id="L22">        .collect(Collectors.toList());</span>
+<span class="fc" id="L23">        pojo.setCustomerName(form.getCustomerName());</span>
+<span class="fc" id="L24">        pojo.setCustomerEmail(form.getCustomerEmail());</span>
+<span class="fc" id="L25">        pojo.setOrderItems(orderItems);</span>
+<span class="fc" id="L26">        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);</span>
+<span class="fc" id="L27">        pojo.setOrderTime(now);</span>
+<span class="fc" id="L28">        String tempInvoiceNo = String.format(&quot;ORD%s%02d%02d%02d&quot;,</span>
+<span class="fc" id="L29">            now.format(DateTimeFormatter.BASIC_ISO_DATE),</span>
+<span class="fc" id="L30">            now.getHour(),</span>
+<span class="fc" id="L31">            now.getMinute(),</span>
+<span class="fc" id="L32">            now.getSecond());</span>
+<span class="fc" id="L33">        pojo.setOrderId(tempInvoiceNo);</span>
+<span class="fc" id="L34">        return pojo;</span>
+    }
+    public static OrderData convertToData(OrderPojo pojo) {
+<span class="fc" id="L37">        OrderData data = new OrderData();</span>
+<span class="fc" id="L38">        data.setId(pojo.getId());</span>
+<span class="fc" id="L39">        data.setOrderTime(pojo.getOrderTime());</span>
+<span class="fc" id="L40">        List&lt;OrderItemData&gt; items = pojo.getOrderItems().stream()</span>
+<span class="fc" id="L41">                .map(OrderHelper::convertToItemData)</span>
+<span class="fc" id="L42">                .collect(Collectors.toList());</span>
+<span class="fc" id="L43">        data.setCustomerName(pojo.getCustomerName());</span>
+<span class="fc" id="L44">        data.setCustomerEmail(pojo.getCustomerEmail());</span>
+<span class="fc" id="L45">        data.setOrderItems(items);</span>
+<span class="fc" id="L46">        data.setStatus(pojo.getStatus());</span>
+<span class="fc" id="L47">        data.setOrderId(pojo.getOrderId());</span>
+<span class="fc" id="L48">        data.setOrderTotal(pojo.getOrderTotal());</span>
+       
+<span class="fc" id="L50">        return data;</span>
+    }
+    private static OrderItemPojo convertToItemEntity(OrderItemForm form) {
+<span class="fc" id="L53">        Integer start = 1;</span>
+<span class="fc" id="L54">        OrderItemPojo pojo = new OrderItemPojo();</span>
+<span class="fc" id="L55">        pojo.setOrderItemId(start++);</span>
+<span class="fc" id="L56">        pojo.setQuantity(form.getQuantity());</span>
+<span class="fc" id="L57">        pojo.setSellingPrice(form.getSellingPrice());</span>
+
+<span class="fc" id="L59">        return pojo;</span>
+    }
+    private static OrderItemData convertToItemData(OrderItemPojo pojo) {
+<span class="fc" id="L62">        OrderItemData data = new OrderItemData();</span>
+<span class="fc" id="L63">        data.setOrderItemId(pojo.getOrderItemId());</span>
+<span class="fc" id="L64">        data.setProductId(pojo.getProductId());</span>
+<span class="fc" id="L65">        data.setQuantity(pojo.getQuantity());</span>
+<span class="fc" id="L66">        data.setSellingPrice(pojo.getSellingPrice());</span>
+<span class="fc" id="L67">        data.setOrderItemTotal(pojo.getOrderItemTotal());</span>
+<span class="fc" id="L68">        return data;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

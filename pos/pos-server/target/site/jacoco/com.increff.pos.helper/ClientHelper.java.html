@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.helper</a> &gt; <span class="el_source">ClientHelper.java</span></div><h1>ClientHelper.java</h1><pre class="source lang-java linenums">package com.increff.pos.helper;
+
+import java.time.ZonedDateTime;
+
+import com.increff.pos.db.ClientPojo;
+import com.increff.pos.model.data.ClientData;
+import com.increff.pos.model.form.ClientForm;
+
+<span class="nc" id="L9">public class ClientHelper {</span>
+    public static ClientPojo convertToEntity(ClientForm form) {
+<span class="fc" id="L11">        ClientPojo pojo = new ClientPojo();</span>
+<span class="fc" id="L12">        pojo.setName(form.getName());</span>
+<span class="fc" id="L13">        pojo.setCreatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L14">        return pojo;</span>
+    }
+
+    public static ClientData convertToData(ClientPojo pojo) {
+<span class="fc" id="L18">        ClientData data = new ClientData();</span>
+<span class="fc" id="L19">        data.setId(pojo.getId());</span>
+<span class="fc" id="L20">        data.setName(pojo.getName());</span>
+<span class="fc" id="L21">        return data;</span>
+    }
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

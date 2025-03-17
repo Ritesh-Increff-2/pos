@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DailyStatsScheduler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pos-server</a> &gt; <a href="index.source.html" class="el_package">com.increff.pos.api.Scheduler</a> &gt; <span class="el_source">DailyStatsScheduler.java</span></div><h1>DailyStatsScheduler.java</h1><pre class="source lang-java linenums">package com.increff.pos.api.Scheduler;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.increff.pos.dao.DailyStatsDao;
+import com.increff.pos.db.DailyStatsPojo;
+import com.increff.pos.model.enums.OrderStatus;
+
+@Service
+<span class="fc" id="L19">public class DailyStatsScheduler {</span>
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private DailyStatsDao dailyStatsDao;
+
+    @Scheduled(fixedRate = 1800000) // Runs every 30 minutes (1800000 milliseconds)
+    public void updateDailyStats() {
+<span class="fc" id="L29">        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);</span>
+<span class="fc" id="L30">        ZonedDateTime startOfDay = now.toLocalDate().atStartOfDay(ZoneOffset.UTC);</span>
+<span class="fc" id="L31">        ZonedDateTime endOfDay = startOfDay.plusDays(1);</span>
+
+        // Create aggregation pipeline
+<span class="fc" id="L34">        Aggregation aggregation = Aggregation.newAggregation(</span>
+<span class="fc" id="L35">            Aggregation.match(</span>
+<span class="fc" id="L36">                Criteria.where(&quot;status&quot;).is(OrderStatus.INVOICED.toString())</span>
+<span class="fc" id="L37">                    .and(&quot;orderTime&quot;).gte(startOfDay).lt(endOfDay)</span>
+            ),
+<span class="fc" id="L39">            Aggregation.unwind(&quot;orderItems&quot;),  // Unwind the orderItems array</span>
+<span class="fc" id="L40">            Aggregation.group()</span>
+<span class="fc" id="L41">                .count().as(&quot;totalInvoicedOrders&quot;)</span>
+<span class="fc" id="L42">                .sum(&quot;orderTotal&quot;).as(&quot;totalRevenue&quot;)</span>
+<span class="fc" id="L43">                .sum(&quot;orderItems.quantity&quot;).as(&quot;totalItems&quot;)</span>
+        );
+
+<span class="fc" id="L46">        AggregationResults&lt;DailyStatsPojo&gt; results = mongoTemplate.aggregate(</span>
+            aggregation, &quot;orders&quot;, DailyStatsPojo.class
+        );
+
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (!results.getMappedResults().isEmpty()) {</span>
+<span class="nc" id="L51">            DailyStatsPojo stats = results.getMappedResults().get(0);</span>
+<span class="nc" id="L52">            stats.setDate(startOfDay);</span>
+            
+            // Find existing entry for the day and update or create new
+<span class="nc" id="L55">            DailyStatsPojo existingStats = dailyStatsDao.findByDate(startOfDay);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (existingStats != null) {</span>
+<span class="nc" id="L57">                stats.setId(existingStats.getId());  </span>
+            }
+<span class="nc" id="L59">            dailyStatsDao.save(stats);</span>
+        }
+<span class="fc" id="L61">    }</span>
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
